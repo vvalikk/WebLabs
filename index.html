@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="scripts.js"></script>
+</head>
+<body>
+<div id="task">
+    <div style="position: fixed; top: 250px;width: 300px" id="userId"></div>
+    <div style="position: fixed; top: 280px;width: 300px" id="id"></div>
+    <div style="position: fixed; top: 310px;width: 300px" id="title"></div>
+    <div style="position: absolute; top:20%;left: 330px;" id="preview"></div>
+    <div style="position: fixed; top: 360px;" id="img"></div>
+
+    <form style="position: absolute; left: 40%" ; onsubmit="Ajax(); return false;">
+        <label>Фотографии какого пользователя вывести?:</label>
+        <br>
+        <input type="number" name="formUsrId" id="formUserId">
+        <br>
+        <label>Какую фотографию вывести:</label>
+        <br>
+        <input type="number" name="formId" id="formId">
+        <br>
+        <input type="submit" value="Показать фотографии">
+    </form>
+</div>
+<div id="albPhotos"></div>
+
+</body>
+</html>
