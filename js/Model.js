@@ -8,7 +8,8 @@ var Model = function () {
             width: 100,
             height: 15,
             x: (window.innerWidth / 2) / 2 - 30,
-            y: window.innerHeight - 100,
+            // y: window.innerHeight - 100,
+            y: 500,
             hide: false
         },
         'ball': {
@@ -18,7 +19,7 @@ var Model = function () {
             height: 16,
             fly: false,
             dx: 2,
-            dy: 2
+            dy: -2
         }
     };
 };
@@ -40,32 +41,6 @@ Model.prototype.getCoords = function (obj) {
 function generateColor() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16)
 }
-
-// Model.prototype.initBlocks = function () {
-//     var count = Math.round((document.querySelector('.mainScene').clientWidth) / 70);
-//     var last = (document.querySelector('.mainScene').clientWidth) % 70;
-//     var lines = 5;
-//     var tmp = this.objs.block;
-//
-//     for (var i = 0; i < lines; i++) {
-//         for (var j = 0; j < count; j++) {
-//             tmp.x = j * 70;
-//             tmp.y = i * 25;
-//             var element = document.createElement("div");
-//             element.classList.add("block");
-//             element.style.left = workplace + (tmp.x - 1) + 'px';
-//             element.style.top = 100 + tmp.y + 'px';
-//             element.style.background = colors[Math.round(Math.random() * 4)];
-//             // console.log();
-//             if (j === count - 1) {
-//                 element.style.width = last + 'px';
-//             }
-//             document.body.append(element);
-//             blocks.push(tmp);
-//         }
-//     }
-//
-// };
 
 Model.prototype.Move = function (e) {
     var keyCode = e.keyCode;
@@ -93,9 +68,10 @@ Model.prototype.flyingBall = function () {
     if (model.checkCollision(view.ball, view.platform) === 'strike') {
         model.objs.ball.dy = -model.objs.ball.dy;
     }
-    if (model.checkBlockCollision(view.ball, view.blocks) === 'hit') {
+    if (model.checkBlockCollision(view.ball, view.blocks) === 'hit')
         model.objs.ball.dy = -model.objs.ball.dy;
-    }
+    else if (model.checkBlockCollision(view.ball, view.blocks) === 'side')
+        model.objs.ball.dx = -model.objs.ball.dx;
 
 
     model.setCoords(model.objs.ball, x + model.objs.ball.dx, y + model.objs.ball.dy);
@@ -132,12 +108,12 @@ Model.prototype.checkBlockCollision = function (ball, blocks) {
             console.log("Вверх");
 
         // если шариктоп выше блок боттом
-        if (ballTop <= blockBottom && ball.dy > 0) {
+        if (ballTop <= blockBottom && ballBottom >= blockTop && this.objs.ball.dy < 0) {
             if (ballLeft >= blockLeft && ballRight <= blockRight) {
-                // blocks[i].style.display = "none";
-                // return 'hit';
+                blocks[i].style.display = "none";
+                return 'hit';
             }
-        } else if (ballBottom >= blockTop && ball.dy < 0) {
+        } else if (ballBottom >= blockTop && ballBottom <= blockBottom && this.objs.ball.dy > 0) {
             if (ballLeft >= blockLeft && ballRight <= blockRight) {
                 blocks[i].style.display = "none";
                 return 'hit';
