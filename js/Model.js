@@ -1,5 +1,7 @@
 const STEP = 20;
 var colors = [];
+var score = 0;
+var interval = null;
 colors.push("red", "blue", "green", "aqua", "yellow");
 
 var Model = function () {
@@ -25,7 +27,6 @@ var Model = function () {
 };
 Model.prototype.init = function (renderFunction) {
     this.needRendering = renderFunction;
-    // this.initBlocks();
 };
 Model.prototype.setCoords = function (obj, x, y) {
     x = x == (undefined || null) ? obj.x : x;
@@ -55,36 +56,46 @@ Model.prototype.Move = function (e) {
             break;
         }
         case 32: {
-            model.objs.ball.fly = true;
-            setInterval(model.flyingBall, 10);
+            if (interval == null) {
+                model.objs.ball.fly = true;
+                interval = setInterval(model.flyingBall, 10);
+            }
         }
     }
-};
+}
+;
 
 Model.prototype.flyingBall = function () {
-    var x = model.getCoords(model.objs.ball).x;
-    var y = model.getCoords(model.objs.ball).y;
-
-    if (model.checkCollision(view.ball, view.platform) === 'strike') {
-        model.objs.ball.dy = -model.objs.ball.dy;
+    if (model.checkCollision(view.ball, view.platform) === 'lose') {
+        this.objs.ball.dx = 0;
+        this.objs.ball.dy = 0;
+        this.objs.ball.fly = false;
     }
-    if (model.checkBlockCollision(view.ball, view.blocks) === 'hit')
+    if (model.checkCollision(view.ball, view.platform) === 'strike')
         model.objs.ball.dy = -model.objs.ball.dy;
-    else if (model.checkBlockCollision(view.ball, view.blocks) === 'side')
-        model.objs.ball.dx = -model.objs.ball.dx;
-
-
-    model.setCoords(model.objs.ball, x + model.objs.ball.dx, y + model.objs.ball.dy);
+    if (model.checkBlockCollision(view.ball, view.blocks) === 'hit') {
+        model.objs.ball.dy = -model.objs.ball.dy;
+        score++;
+        document.getElementById('score').innerHTML = "Счет: " + score;
+    }
+    if (model.objs.ball.fly === true) {
+        var x = model.getCoords(model.objs.ball).x;
+        var y = model.getCoords(model.objs.ball).y;
+        model.setCoords(model.objs.ball, x + model.objs.ball.dx, y + model.objs.ball.dy);
+    }
 };
 
 Model.prototype.checkCollision = function (ball, platform) {
     var platformLeft = platform.getBoundingClientRect().left;
     var platformRight = platform.getBoundingClientRect().right;
-    var platformY = this.objs.platform.y;
+    var platformTop = platform.getBoundingClientRect().top;
     var ballLeft = ball.getBoundingClientRect().left;
     var ballRight = ball.getBoundingClientRect().right;
-    var ballY = this.objs.ball.y;
-    if (ballY >= platformY - model.objs.platform.height && ballLeft >= platformLeft && ballRight <= platformRight)
+    var ballTop = ball.getBoundingClientRect().top;
+    var ballBottom = ball.getBoundingClientRect().bottom;
+    if (ballTop >= platformTop)
+        return 'lose';
+    else if (ballBottom >= platformTop && ballLeft >= platformLeft && ballRight <= platformRight)
         return 'strike';
     else
         return false;
@@ -102,23 +113,16 @@ Model.prototype.checkBlockCollision = function (ball, blocks) {
         var blockTop = blocks[i].getBoundingClientRect().top;
         var blockBottom = blocks[i].getBoundingClientRect().bottom;
 
-        if (ball.dy > 0)
-            console.log("Вниз");
-        else
-            console.log("Вверх");
-
-        // если шариктоп выше блок боттом
-        if (ballTop <= blockBottom && ballBottom >= blockTop && this.objs.ball.dy < 0) {
-            if (ballLeft >= blockLeft && ballRight <= blockRight) {
+        if (ballLeft >= blockLeft && ballRight <= blockRight) {
+            if (ballTop <= blockBottom && ballBottom >= blockBottom && this.objs.ball.dy < 0) {
                 blocks[i].style.display = "none";
                 return 'hit';
-            }
-        } else if (ballBottom >= blockTop && ballBottom <= blockBottom && this.objs.ball.dy > 0) {
-            if (ballLeft >= blockLeft && ballRight <= blockRight) {
+            } else if (ballBottom >= blockTop && ballTop <= blockTop && this.objs.ball.dy > 0) {
                 blocks[i].style.display = "none";
                 return 'hit';
             }
         }
+
     }
     return false;
 };

@@ -2,6 +2,7 @@ var View = function () {
     this.platform = document.querySelector('.platform');
     this.ball = document.querySelector('.ball');
     this.blocks = null;
+    this.score = null;
     this.onKeyDownEvent = null;
 };
 View.prototype.render = function (objs) {
@@ -21,6 +22,9 @@ View.prototype.render = function (objs) {
     }
 };
 
+
+
+
 View.prototype.initBlocks = function () {
     var count = Math.round((document.querySelector('.mainScene').clientWidth) / 70);
     var workspace = Math.round((window.innerWidth + 4) / 4);
@@ -29,13 +33,13 @@ View.prototype.initBlocks = function () {
         x: 0,
         y: 0,
         width: (document.querySelector('.mainScene').clientWidth / count),
-        height: 20,
+        height: 30,
         hit: false,
         hide: false
     };
 
     for (var i = 0; i < lines; i++) {
-        for (var j = 0; j < count; j++) {
+        for (var j = 0; j < count-2; j++) {
             block.x = j * block.width;
             block.y = i * block.height;
             var element = document.createElement("div");
@@ -43,12 +47,21 @@ View.prototype.initBlocks = function () {
             element.style.left = workspace + (block.x) + 'px';
             element.style.top = 100 + block.y + 'px';
             element.style.width = block.width + 'px';
+            element.style.height = block.height + 'px';
             element.style.background = colors[Math.round(Math.random() * 4)];
             document.body.append(element);
         }
     }
 };
 View.prototype.init = function () {
+    let element = document.createElement("div");
+    element.id = "score";
+    element.textContent = "Счет: 0";
+    element.style.position = "absolute";
+    element.style.left = "50px";
+    element.style.top = "100px";
+    element.style.fontSize = "40px";
+    document.body.append(element);
     let el = document.querySelector('.mainScene');
     var sceneWidth = (document.querySelector('.mainScene').clientWidth);
     el.setAttribute("style", "width:" + (sceneWidth - (sceneWidth % 10)).toString() + "px");
