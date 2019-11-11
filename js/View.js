@@ -23,32 +23,32 @@ View.prototype.render = function (objs) {
 };
 
 
-
-
 View.prototype.initBlocks = function () {
-    var count = Math.round((document.querySelector('.mainScene').clientWidth) / 70);
+    var count = Math.round((document.querySelector('.mainScene').clientWidth) / 100);
     var workspace = Math.round((window.innerWidth + 4) / 4);
     var lines = 5;
     var block = {
         x: 0,
         y: 0,
         width: (document.querySelector('.mainScene').clientWidth / count),
-        height: 30,
+        height: 50,
         hit: false,
         hide: false
     };
 
-    for (var i = 0; i < lines; i++) {
-        for (var j = 0; j < count-2; j++) {
+    for (var i = 0; i < lines-1; i++) {
+        for (var j = 0; j < count; j++) {
             block.x = j * block.width;
             block.y = i * block.height;
             var element = document.createElement("div");
             element.className = "block";
             element.style.left = workspace + (block.x) + 'px';
-            element.style.top = 100 + block.y + 'px';
+            element.style.top = block.y + 'px';
             element.style.width = block.width + 'px';
             element.style.height = block.height + 'px';
             element.style.background = colors[Math.round(Math.random() * 4)];
+            element.style.boxSizing = "border-box";
+            element.style.border = "solid 1px black";
             document.body.append(element);
         }
     }

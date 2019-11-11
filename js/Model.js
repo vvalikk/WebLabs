@@ -10,15 +10,14 @@ var Model = function () {
             width: 100,
             height: 15,
             x: (window.innerWidth / 2) / 2 - 30,
-            // y: window.innerHeight - 100,
             y: 500,
             hide: false
         },
         'ball': {
             x: (window.innerWidth / 2) / 2 - 15,
             y: window.innerHeight / 2,
-            width: 16,
-            height: 16,
+            width: 11,
+            height: 11,
             fly: false,
             dx: 2,
             dy: -2
@@ -62,8 +61,7 @@ Model.prototype.Move = function (e) {
             }
         }
     }
-}
-;
+};
 
 Model.prototype.flyingBall = function () {
     if (model.checkCollision(view.ball, view.platform) === 'lose') {
@@ -74,7 +72,7 @@ Model.prototype.flyingBall = function () {
     if (model.checkCollision(view.ball, view.platform) === 'strike')
         model.objs.ball.dy = -model.objs.ball.dy;
     if (model.checkBlockCollision(view.ball, view.blocks) === 'hit') {
-        model.objs.ball.dy = -model.objs.ball.dy;
+        // model.objs.ball.dy = -model.objs.ball.dy;
         score++;
         document.getElementById('score').innerHTML = "Счет: " + score;
     }
@@ -103,28 +101,114 @@ Model.prototype.checkCollision = function (ball, platform) {
 
 Model.prototype.checkBlockCollision = function (ball, blocks) {
     var ballLeft = ball.getBoundingClientRect().left;
-    var ballRight = ball.getBoundingClientRect().right;
     var ballTop = ball.getBoundingClientRect().top;
-    var ballBottom = ball.getBoundingClientRect().bottom;
 
     for (var i = 0; i < blocks.length; i++) {
         var blockLeft = blocks[i].getBoundingClientRect().left;
-        var blockRight = blocks[i].getBoundingClientRect().right;
         var blockTop = blocks[i].getBoundingClientRect().top;
+        var blockRight = blocks[i].getBoundingClientRect().right;
         var blockBottom = blocks[i].getBoundingClientRect().bottom;
 
-        if (ballLeft >= blockLeft && ballRight <= blockRight) {
-            if (ballTop <= blockBottom && ballBottom >= blockBottom && this.objs.ball.dy < 0) {
+//left & up
+        if (this.objs.ball.dy < 0 && this.objs.ball.dx < 0) {
+            if (this.isPointInRect(ballLeft - 3,
+                ballTop,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
                 blocks[i].style.display = "none";
+                // ballLeft = blockRight + this.objs.ball.dx;
+                this.objs.ball.dx = 2;
                 return 'hit';
-            } else if (ballBottom >= blockTop && ballTop <= blockTop && this.objs.ball.dy > 0) {
+            }
+            if (this.isPointInRect(ballLeft,
+                ballTop - 3,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
                 blocks[i].style.display = "none";
+                this.objs.ball.dy = 2;
                 return 'hit';
             }
         }
-
+        //left & down
+        else if (this.objs.ball.dy > 0 && this.objs.ball.dx < 0) {
+            if (this.isPointInRect(ballLeft - 3,
+                ballTop,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
+                blocks[i].style.display = "none";
+                this.objs.ball.dx = 2;
+                return 'hit';
+            }
+            if (this.isPointInRect(ballLeft,
+                ballTop + 3,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
+                blocks[i].style.display = "none";
+                this.objs.ball.dy = -2;
+                return 'hit';
+            }
+        }
+        //right & up
+        else if (this.objs.ball.dy < 0 && this.objs.ball.dx > 0) {
+            if (this.isPointInRect(ballLeft + 3,
+                ballTop,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
+                blocks[i].style.display = "none";
+                this.objs.ball.dx = -2;
+                return 'hit';
+            }
+            if (this.isPointInRect(ballLeft,
+                ballTop - 3,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
+                blocks[i].style.display = "none";
+                this.objs.ball.dy = 2;
+                return 'hit';
+            }
+        }
+//right & down
+        else if (this.objs.ball.dy > 0 && this.objs.ball.dx > 0) {
+            if (this.isPointInRect(ballLeft + 3,
+                ballTop,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
+                blocks[i].style.display = "none";
+                this.objs.ball.dx = -2;
+                return 'hit';
+            }
+            if (this.isPointInRect(ballLeft,
+                ballTop + 3,
+                blockLeft,
+                blockTop,
+                blockRight,
+                blockBottom)) {
+                blocks[i].style.display = "none";
+                this.objs.ball.dy = -2;
+                return 'hit';
+            }
+        }
     }
     return false;
+};
+
+Model.prototype.isPointInRect = function (x, y, left, top, right, bot) {
+    return (x > left && x < right) && (y > top && y < bot);
+
 };
 
 function checkScreenBorders(obj, x, y) {
@@ -141,7 +225,7 @@ function checkScreenBorders(obj, x, y) {
             obj.dx = -obj.dx;
     }
     if (obj.hasOwnProperty('hide')) {
-        if (!(x <= 0 || x + obj.width >= (window.innerWidth / 2)))
+        if (!(x <= -10 || x + obj.width >= (window.innerWidth / 2)))
             obj.x = x;
     }
 }

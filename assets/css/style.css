@@ -23,9 +23,9 @@ body {
 
 .ball {
     position: absolute;
-    width: 15px;
-    height: 15px;
-    border-radius: 25px;
+    width: 10px;
+    height: 10px;
+    border-radius: 15px;
     background: red;
     /*background-image: url(../img/ball.png);*/
     /*background-repeat: no-repeat;*/
