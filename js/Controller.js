@@ -9,7 +9,7 @@ Controller.prototype.init = function () {
     this.needRendering();
 };
 Controller.prototype.moving = function (e) {
-    this.Model.platformMove(e);
+    this.Model.Move(e);
 };
 Controller.prototype.needRendering = function () {
     this.View.render(model.objs);
