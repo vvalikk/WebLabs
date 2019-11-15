@@ -70,11 +70,11 @@ Model.prototype.flyingBall = function () {
         this.objs.ball.dy = 0;
         this.objs.ball.fly = false;
     }
-    if (model.checkCollision(view.ball, view.platform) === 'strike')
+    if (model.checkCollision(view.ball, view.platform) === 'strike') {
         model.objs.ball.dy = -model.objs.ball.dy;
+    }
     if (model.checkBlockCollision(view.ball, view.blocks) === 'hit') {
         model.objs.score.value++;
-        console.log(model.objs.score);
     }
     if (model.objs.ball.fly === true) {
         model.objs.ball.x = model.getCoords(model.objs.ball).x;
@@ -91,7 +91,6 @@ Model.prototype.checkCollision = function (ball, platform) {
     var ballRight = ball.x + 10;
     var ballTop = ball.y;
     var ballBottom = ball.y + 10;
-
     if (ballTop >= platformTop)
         return 'lose';
     else if (ballBottom > platformTop && ballRight >= platformLeft && ballLeft <= platformRight)
@@ -104,7 +103,6 @@ Model.prototype.checkCollision = function (ball, platform) {
 Model.prototype.checkBlockCollision = function (ball, blocks) {
     var ballLeft = ball.x;
     var ballTop = ball.y;
-
     for (var i = 0; i < blocks.length; i++) {
         var blockLeft = blocks[i].x;
         var blockTop = blocks[i].y;
