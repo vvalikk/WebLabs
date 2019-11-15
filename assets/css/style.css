@@ -4,7 +4,6 @@ body {
 
 .mainScene {
     position: relative;
-    /*border: 1px solid black;*/
     width: 50%;
     height: 650px;
     margin: 0 auto;
@@ -15,9 +14,6 @@ body {
     position: absolute;
     width: 100px;
     height: 15px;
-    /*background-image: url(../img/platform.png);*/
-    /*background-repeat: no-repeat;*/
-    /*background-size: 100% 100%;*/
     background: white;
 }
 
@@ -27,16 +23,8 @@ body {
     height: 10px;
     border-radius: 15px;
     background: red;
-    /*background-image: url(../img/ball.png);*/
-    /*background-repeat: no-repeat;*/
-    /*background-size: 100% 100%;*/
 }
 
 .block {
     position: absolute;
-    width: 70px;
-    height: 25px;
-    color: aqua;
-
-    background-size: 100% 100%;
 }
