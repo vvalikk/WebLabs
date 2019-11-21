@@ -1,26 +1,27 @@
 const STEP = 20;
-var colors = [];
 var score = 0;
 var interval = null;
-colors.push("red", "blue", "green", "aqua", "yellow");
 
 var Model = function () {
     this.objs = {
         'platform': {
-            width: 100,
+            width: 120,
             height: 15,
-            x: (window.innerWidth / 2) / 2 - 30,
+            x: (window.innerWidth / 2) - 30,
             y: 500,
             hide: false
         },
         'ball': {
             x: (window.innerWidth / 2) / 2 - 15,
-            y: window.innerHeight / 2,
+            y: 500 - 15,
             width: 11,
             height: 11,
             fly: false,
             dx: 2,
             dy: -2
+        },
+        'score': {
+            value: 0
         }
     };
 };
@@ -72,134 +73,136 @@ Model.prototype.flyingBall = function () {
     if (model.checkCollision(view.ball, view.platform) === 'strike')
         model.objs.ball.dy = -model.objs.ball.dy;
     if (model.checkBlockCollision(view.ball, view.blocks) === 'hit') {
-        // model.objs.ball.dy = -model.objs.ball.dy;
-        score++;
-        document.getElementById('score').innerHTML = "Счет: " + score;
+        model.objs.score.value++;
+        console.log(model.objs.score);
     }
     if (model.objs.ball.fly === true) {
-        var x = model.getCoords(model.objs.ball).x;
-        var y = model.getCoords(model.objs.ball).y;
-        model.setCoords(model.objs.ball, x + model.objs.ball.dx, y + model.objs.ball.dy);
+        model.objs.ball.x = model.getCoords(model.objs.ball).x;
+        model.objs.ball.y = model.getCoords(model.objs.ball).y;
+        model.setCoords(model.objs.ball, model.objs.ball.x + model.objs.ball.dx, model.objs.ball.y + model.objs.ball.dy);
     }
 };
 
 Model.prototype.checkCollision = function (ball, platform) {
-    var platformLeft = platform.getBoundingClientRect().left;
-    var platformRight = platform.getBoundingClientRect().right;
-    var platformTop = platform.getBoundingClientRect().top;
-    var ballLeft = ball.getBoundingClientRect().left;
-    var ballRight = ball.getBoundingClientRect().right;
-    var ballTop = ball.getBoundingClientRect().top;
-    var ballBottom = ball.getBoundingClientRect().bottom;
+    var platformLeft = platform.x;
+    var platformRight = platform.x + platform.w;
+    var platformTop = platform.y;
+    var ballLeft = ball.x;
+    var ballRight = ball.x + 10;
+    var ballTop = ball.y;
+    var ballBottom = ball.y + 10;
+
     if (ballTop >= platformTop)
         return 'lose';
-    else if (ballBottom >= platformTop && ballLeft >= platformLeft && ballRight <= platformRight)
+    else if (ballBottom > platformTop && ballRight >= platformLeft && ballLeft <= platformRight)
         return 'strike';
     else
         return false;
 };
 
+
 Model.prototype.checkBlockCollision = function (ball, blocks) {
-    var ballLeft = ball.getBoundingClientRect().left;
-    var ballTop = ball.getBoundingClientRect().top;
+    var ballLeft = ball.x;
+    var ballTop = ball.y;
 
     for (var i = 0; i < blocks.length; i++) {
-        var blockLeft = blocks[i].getBoundingClientRect().left;
-        var blockTop = blocks[i].getBoundingClientRect().top;
-        var blockRight = blocks[i].getBoundingClientRect().right;
-        var blockBottom = blocks[i].getBoundingClientRect().bottom;
+        var blockLeft = blocks[i].x;
+        var blockTop = blocks[i].y;
+        var blockRight = blocks[i].x + blocks[i].w;
+        var blockBottom = blocks[i].y + blocks[i].h;
 
 //left & up
-        if (this.objs.ball.dy < 0 && this.objs.ball.dx < 0) {
-            if (this.isPointInRect(ballLeft - 3,
-                ballTop,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                // ballLeft = blockRight + this.objs.ball.dx;
-                this.objs.ball.dx = 2;
-                return 'hit';
+        if (blocks[i].visible) {
+            if (this.objs.ball.dy < 0 && this.objs.ball.dx < 0) {
+                if (this.isPointInRect(ballLeft - 3,
+                    ballTop,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dx = 2;
+                    return 'hit';
+                }
+                if (this.isPointInRect(ballLeft,
+                    ballTop - 3,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dy = 2;
+                    return 'hit';
+                }
             }
-            if (this.isPointInRect(ballLeft,
-                ballTop - 3,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                this.objs.ball.dy = 2;
-                return 'hit';
+            //left & down
+            else if (this.objs.ball.dy > 0 && this.objs.ball.dx < 0) {
+                if (this.isPointInRect(ballLeft - 3,
+                    ballTop,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dx = 2;
+                    return 'hit';
+                }
+                if (this.isPointInRect(ballLeft,
+                    ballTop + 3,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dy = -2;
+                    return 'hit';
+                }
             }
-        }
-        //left & down
-        else if (this.objs.ball.dy > 0 && this.objs.ball.dx < 0) {
-            if (this.isPointInRect(ballLeft - 3,
-                ballTop,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                this.objs.ball.dx = 2;
-                return 'hit';
+            //right & up
+            else if (this.objs.ball.dy < 0 && this.objs.ball.dx > 0) {
+                if (this.isPointInRect(ballLeft + 3,
+                    ballTop,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dx = -2;
+                    return 'hit';
+                }
+                if (this.isPointInRect(ballLeft,
+                    ballTop - 3,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dy = 2;
+                    return 'hit';
+                }
             }
-            if (this.isPointInRect(ballLeft,
-                ballTop + 3,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                this.objs.ball.dy = -2;
-                return 'hit';
-            }
-        }
-        //right & up
-        else if (this.objs.ball.dy < 0 && this.objs.ball.dx > 0) {
-            if (this.isPointInRect(ballLeft + 3,
-                ballTop,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                this.objs.ball.dx = -2;
-                return 'hit';
-            }
-            if (this.isPointInRect(ballLeft,
-                ballTop - 3,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                this.objs.ball.dy = 2;
-                return 'hit';
-            }
-        }
 //right & down
-        else if (this.objs.ball.dy > 0 && this.objs.ball.dx > 0) {
-            if (this.isPointInRect(ballLeft + 3,
-                ballTop,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                this.objs.ball.dx = -2;
-                return 'hit';
-            }
-            if (this.isPointInRect(ballLeft,
-                ballTop + 3,
-                blockLeft,
-                blockTop,
-                blockRight,
-                blockBottom)) {
-                blocks[i].style.display = "none";
-                this.objs.ball.dy = -2;
-                return 'hit';
+            else if (this.objs.ball.dy > 0 && this.objs.ball.dx > 0) {
+                if (this.isPointInRect(ballLeft + 3,
+                    ballTop,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dx = -2;
+                    return 'hit';
+                }
+                if (this.isPointInRect(ballLeft,
+                    ballTop + 3,
+                    blockLeft,
+                    blockTop,
+                    blockRight,
+                    blockBottom)) {
+                    blocks[i].visible = false;
+                    this.objs.ball.dy = -2;
+                    return 'hit';
+                }
             }
         }
     }
@@ -219,13 +222,13 @@ function checkScreenBorders(obj, x, y) {
             obj.dy = -obj.dy;
     }
     if (obj.hasOwnProperty('dx')) {
-        if (!(x <= 0 || x + obj.width * 2 >= (window.innerWidth / 2)))
+        if (!(x <= 0 || x + 10 >= (window.innerWidth)))
             obj.x = x;
         else
             obj.dx = -obj.dx;
     }
     if (obj.hasOwnProperty('hide')) {
-        if (!(x <= -10 || x + obj.width >= (window.innerWidth / 2)))
+        if (!(x <= -10 || x + obj.width >= window.innerWidth))
             obj.x = x;
     }
 }
