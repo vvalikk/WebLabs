@@ -39,10 +39,6 @@ Model.prototype.getCoords = function (obj) {
     return {x: obj.x, y: obj.y};
 };
 
-function generateColor() {
-    return '#' + Math.floor(Math.random() * 16777215).toString(16)
-}
-
 Model.prototype.Move = function (e) {
     var keyCode = e.keyCode;
     var x = model.getCoords(model.objs.platform).x;

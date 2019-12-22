@@ -25,12 +25,14 @@ body {
     position: absolute;
     width: 10px;
     height: 10px;
-    border-radius: 15px;
+    /*transition: 1s;*/
+    /*border-radius: 15px;*/
     background: red;
     /*background-image: url(../img/ball.png);*/
     /*background-repeat: no-repeat;*/
     /*background-size: 100% 100%;*/
 }
+
 
 .block {
     position: absolute;
@@ -40,5 +42,6 @@ body {
 
     background-size: 100% 100%;
 }
-#canvas1{
+
+#canvas1 {
 }
